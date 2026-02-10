@@ -117,3 +117,86 @@ public class CRUDApp {
             }
         } catch (Exception e) { System.out.println(e.getMessage()); }
     }
+
+    // FORMULARIO DINAMICO: Crea los campos segun la tabla de la BD
+    static void formulario(DefaultTableModel modelo, Object idEdit) {
+        try {
+            // Consulta la estructura de la tabla
+            ResultSet rsMeta = conexion.createStatement().executeQuery("SELECT * FROM "+tablaActual+" LIMIT 1");
+            ResultSetMetaData meta = rsMeta.getMetaData();
+            JPanel p = new JPanel(new GridLayout(0, 2, 8, 8));
+            ArrayList<JTextField> campos = new ArrayList<>();
+            ArrayList<String> nombres = new ArrayList<>();
+            ArrayList<String> tipos = new ArrayList<>();
+
+            for (int i = 1; i <= meta.getColumnCount(); i++) {
+                String col = meta.getColumnName(i);
+                String tipo = meta.getColumnTypeName(i).toLowerCase();
+
+                // Regla: No pide el ID (es serial) ni la FECHA_CREACION (es automatica)
+                if (i == 1 || col.equalsIgnoreCase("fecha_creacion")) continue; 
+
+                p.add(new JLabel(" " + col.toUpperCase() + ":"));
+                JTextField tf = new JTextField();
+                
+                // Si es modo EDITAR, busca el valor actual en la BD y se coloca en el cuadro
+                if (idEdit != null) {
+                    Statement st = conexion.createStatement();
+                    ResultSet rsVal = st.executeQuery("SELECT "+col+" FROM "+tablaActual+" WHERE id="+idEdit);
+                    if(rsVal.next()) tf.setText(rsVal.getString(1));
+                }
+                
+                campos.add(tf);
+                nombres.add(col);
+                tipos.add(tipo);
+                p.add(tf);
+            }
+
+            if (JOptionPane.showConfirmDialog(null, p, idEdit == null ? "Nuevo Registro" : "Editar", 2) == 0) {
+                String sql;
+                if (idEdit == null) {
+                    sql = "INSERT INTO "+tablaActual+" ("+String.join(",", nombres)+") VALUES ("+"?,".repeat(nombres.size()).replaceAll(",$", "")+")";
+                } else {
+                    sql = "UPDATE "+tablaActual+" SET "+String.join("=?,", nombres)+"=? WHERE id=" + idEdit;
+                }
+
+                PreparedStatement ps = conexion.prepareStatement(sql);
+                for (int i = 0; i < campos.size(); i++) {
+                    String val = campos.get(i).getText().trim();
+                    String t = tipos.get(i);
+
+                    // --- VALIDACION DE TIPOS DE DATOS ---
+                    if (t.contains("int") || t.contains("serial")) {
+                        // Caso Integer (Stock): Quita todo lo que no sea numero
+                        ps.setInt(i + 1, val.isEmpty() ? 0 : Integer.parseInt(val.replaceAll("[^0-9]", "")));
+                    } 
+                    else if (t.contains("numeric") || t.contains("decimal") || t.contains("double")) {
+                        // Caso Decimal (Precio): Unifica comas y puntos
+                        String limpio = val.replace(",", ".").replaceAll("[^0-9.]", "");
+                        ps.setBigDecimal(i + 1, limpio.isEmpty() ? BigDecimal.ZERO : new BigDecimal(limpio));
+                    } 
+                    else {
+                        // Caso Texto (Nombre, Descripcion)
+                        ps.setObject(i + 1, val.isEmpty() ? null : val);
+                    }
+                }
+                ps.executeUpdate();
+                cargarTabla(modelo, ""); // Refrescar
+            }
+        } catch (Exception e) { 
+            JOptionPane.showMessageDialog(null, "Error: Revisa que el Stock sea número entero y el Precio decimal."); 
+        }
+    }
+
+    static void eliminar(JTable t, DefaultTableModel m) {
+        int fila = t.getSelectedRow();
+        if (fila == -1) return;
+        try {
+            Object id = m.getValueAt(fila, 0);
+            if (JOptionPane.showConfirmDialog(null, "¿Eliminar ID " + id + "?") == 0) {
+                conexion.createStatement().executeUpdate("DELETE FROM "+tablaActual+" WHERE id = " + id);
+                cargarTabla(m, "");
+            }
+        } catch (Exception e) { JOptionPane.showMessageDialog(null, e.getMessage()); }
+    }
+}
