@@ -91,3 +91,29 @@ public class CRUDApp {
         v.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         v.setVisible(true);
     }
+
+    // METODO PARA CARGAR DATOS EN LA TABLA
+    static void cargarTabla(DefaultTableModel modelo, String filtro) {
+        try {
+            String sql = "SELECT * FROM " + tablaActual;
+            // CAST(id AS TEXT) nos permite buscar numeros como si fueran texto
+            if (!filtro.isEmpty()) sql += " WHERE CAST(id AS TEXT) ILIKE '%"+filtro+"%' OR nombre ILIKE '%"+filtro+"%'";
+            sql += " ORDER BY id ASC";
+
+            ResultSet rs = conexion.createStatement().executeQuery(sql);
+            ResultSetMetaData meta = rs.getMetaData(); // Obtenemos info de las columnas
+            int nCols = meta.getColumnCount();
+
+            // Seteamos las cabeceras automaticamente
+            Object[] cabeceras = new Object[nCols];
+            for (int i = 1; i <= nCols; i++) cabeceras[i-1] = meta.getColumnName(i).toUpperCase();
+            modelo.setColumnIdentifiers(cabeceras);
+
+            modelo.setRowCount(0); // Limpiar tabla antes de recargar
+            while (rs.next()) {
+                Object[] fila = new Object[nCols];
+                for (int i = 1; i <= nCols; i++) fila[i-1] = rs.getObject(i);
+                modelo.addRow(fila);
+            }
+        } catch (Exception e) { System.out.println(e.getMessage()); }
+    }
