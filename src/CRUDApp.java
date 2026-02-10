@@ -31,7 +31,21 @@ public class CRUDApp {
         btn.setBackground(new Color(100, 149, 237)); 
         btn.setForeground(Color.BLACK); 
         f.add(btn);
+        // evento para conectar a la base de datos
+        btn.addActionListener(e -> {
+            try {
+                // Driver JDBC de PostgreSQL
+                String url = "jdbc:postgresql://localhost:5432/" + txtBD.getText();
+                tablaActual = txtTabla.getText();
+                conexion = DriverManager.getConnection(url, txtUser.getText(), new String(txtPass.getPassword()));
+                f.dispose(); // Cerramos el login
+                mostrarCRUD(); // Abrimos la interfaz principal
+            } catch (Exception ex) { JOptionPane.showMessageDialog(null, "Error: " + ex.getMessage()); }
+        });
+        f.setVisible(true);
+    }
 
 
     
+
 
