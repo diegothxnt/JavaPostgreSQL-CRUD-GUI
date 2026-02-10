@@ -49,7 +49,7 @@ public class CRUDApp {
         JFrame v = new JFrame("Panel Control - " + tablaActual);
         v.setSize(950, 600);
         v.setLocationRelativeTo(null);
- // modelo de tabla: bloqueamos la edicion directa en las celdas
+        // modelo de tabla: bloqueamos la edicion directa en las celdas
         DefaultTableModel modelo = new DefaultTableModel() { 
             @Override public boolean isCellEditable(int r, int c) { return false; } 
         };
@@ -61,16 +61,33 @@ public class CRUDApp {
         JButton btnEdit = new JButton("EDITAR");
         JButton btnDel = new JButton("ELIMINAR");
 
-      // Estilos visuales (Colores llamativos con texto negro)
+        // Estilos visuales (Colores llamativos con texto negro)
         btnAdd.setBackground(Color.GREEN); btnAdd.setForeground(Color.BLACK);
         btnEdit.setBackground(Color.YELLOW); btnEdit.setForeground(Color.BLACK);
         btnDel.setBackground(Color.PINK); btnDel.setForeground(Color.BLACK);
         
         pAcciones.add(btnAdd); pAcciones.add(btnEdit); pAcciones.add(btnDel);
 
-        // Panel inferior para búsqueda
+        // Panel inferior para busqueda
         JPanel pBusqueda = new JPanel();
         JTextField txtBus = new JTextField(15);
         JButton btnBus = new JButton("BUSCAR");
         btnBus.setForeground(Color.BLACK);
         pBusqueda.add(new JLabel("Filtro:")); pBusqueda.add(txtBus); pBusqueda.add(btnBus);
+
+        // Asignacion de eventos a los botones
+        btnAdd.addActionListener(e -> formulario(modelo, null)); // null = modo Agregar
+        btnEdit.addActionListener(e -> {
+            int f = tabla.getSelectedRow();
+            if (f != -1) formulario(modelo, modelo.getValueAt(f, 0)); // Enviamos el ID para editar
+            else JOptionPane.showMessageDialog(null, "Selecciona una fila");
+        });
+        btnDel.addActionListener(e -> eliminar(tabla, modelo));
+        btnBus.addActionListener(e -> cargarTabla(modelo, txtBus.getText()));
+
+        v.add(pAcciones, BorderLayout.NORTH);
+        v.add(new JScrollPane(tabla), BorderLayout.CENTER);
+        v.add(pBusqueda, BorderLayout.SOUTH);
+        v.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        v.setVisible(true);
+    }
