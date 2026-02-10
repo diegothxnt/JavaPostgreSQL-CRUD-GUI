@@ -44,8 +44,14 @@ public class CRUDApp {
         });
         f.setVisible(true);
     }
+    static void mostrarCRUD() {
+        // ventana principal 
+        JFrame v = new JFrame("Panel Control - " + tablaActual);
+        v.setSize(950, 600);
+        v.setLocationRelativeTo(null);
 
 
     
+
 
 
