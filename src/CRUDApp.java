@@ -61,11 +61,16 @@ public class CRUDApp {
         JButton btnEdit = new JButton("EDITAR");
         JButton btnDel = new JButton("ELIMINAR");
 
+      // Estilos visuales (Colores llamativos con texto negro)
+        btnAdd.setBackground(Color.GREEN); btnAdd.setForeground(Color.BLACK);
+        btnEdit.setBackground(Color.YELLOW); btnEdit.setForeground(Color.BLACK);
+        btnDel.setBackground(Color.PINK); btnDel.setForeground(Color.BLACK);
+        
+        pAcciones.add(btnAdd); pAcciones.add(btnEdit); pAcciones.add(btnDel);
 
-
-    
-
-
-
-
-
+        // Panel inferior para búsqueda
+        JPanel pBusqueda = new JPanel();
+        JTextField txtBus = new JTextField(15);
+        JButton btnBus = new JButton("BUSCAR");
+        btnBus.setForeground(Color.BLACK);
+        pBusqueda.add(new JLabel("Filtro:")); pBusqueda.add(txtBus); pBusqueda.add(btnBus);
