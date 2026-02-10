@@ -16,6 +16,22 @@ public class CRUDApp {
         f.setSize(400, 350);
         f.setLayout(new GridLayout(0, 1, 10, 10));
         f.setLocationRelativeTo(null);
+        // campos para ingresar datos de conexion
+        JTextField txtBD = new JTextField("PV");
+        JTextField txtUser = new JTextField("postgres");
+        JPasswordField txtPass = new JPasswordField();
+        JTextField txtTabla = new JTextField("productos");
+
+        f.add(new JLabel(" Base de Datos:")); f.add(txtBD);
+        f.add(new JLabel(" Usuario:")); f.add(txtUser);
+        f.add(new JLabel(" Contraseña:")); f.add(txtPass);
+        f.add(new JLabel(" Tabla:")); f.add(txtTabla);
+
+        JButton btn = new JButton("CONECTAR");
+        btn.setBackground(new Color(100, 149, 237)); 
+        btn.setForeground(Color.BLACK); 
+        f.add(btn);
 
 
     
+
