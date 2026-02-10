@@ -55,9 +55,16 @@ public class CRUDApp {
         };
         JTable tabla = new JTable(modelo);
         cargarTabla(modelo, "");
+         // panel superior para los botones de accion
+        JPanel pAcciones = new JPanel();
+        JButton btnAdd = new JButton("NUEVO");
+        JButton btnEdit = new JButton("EDITAR");
+        JButton btnDel = new JButton("ELIMINAR");
+
 
 
     
+
 
 
 
