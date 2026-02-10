@@ -49,9 +49,16 @@ public class CRUDApp {
         JFrame v = new JFrame("Panel Control - " + tablaActual);
         v.setSize(950, 600);
         v.setLocationRelativeTo(null);
+ // modelo de tabla: bloqueamos la edicion directa en las celdas
+        DefaultTableModel modelo = new DefaultTableModel() { 
+            @Override public boolean isCellEditable(int r, int c) { return false; } 
+        };
+        JTable tabla = new JTable(modelo);
+        cargarTabla(modelo, "");
 
 
     
+
 
 
 
